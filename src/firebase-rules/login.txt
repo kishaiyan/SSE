@@ -1,0 +1,13 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Assuming there's a 'User' collection to store user roles and other information
+    match /User/{userId} {
+      // Users can read their own document
+      allow read: if request.auth.uid == userId;
+
+      // Writing to User documents should be restricted, perhaps to admin users or through Cloud Functions
+      allow write: if false;
+    }
+  }
+}

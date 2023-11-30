@@ -1,0 +1,29 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Rules for Candidates and Parties - Readable by anyone, writable by admin
+    match /candidates/{document=**} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true;
+    }
+    match /party/{document=**} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true;
+    }
+
+    // Rules for Votes - Each user can only submit one vote
+    match /VotesParty/{userId} {
+      allow create: if request.auth.uid == userId && !exists(/databases/{database}/documents/VotesParty/{userId});
+    }
+    match /VotesCandidate/{userId} {
+      allow create: if request.auth.uid == userId && !exists(/databases/{database}/documents/VotesCandidate/{userId});
+    }
+
+    // Rules for User data - A user can only read and write their own data
+    match /Voters/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+  }
+}
+
+

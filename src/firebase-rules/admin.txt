@@ -1,0 +1,34 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Admin role required for all write operations
+    function isAdmin() {
+      return request.auth.token.admin == true;
+    }
+
+    // Candidates collection
+    match /candidates/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Parties collection
+    match /party/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Voters collection
+    match /voters/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Results collection
+    match /results/{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Only admin users can read and write to all documents
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
